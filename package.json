@@ -11,7 +11,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "electron .",
-    "electron-build": "ng build --prod && electron ."
+    "electron-build": "ng build --prod && electron .",
+    "electron-rebuild": "node_modules\\.bin\\electron-rebuild"
   },
   "private": true,
   "dependencies": {
@@ -40,6 +41,7 @@
     "codelyzer": "^4.0.1",
     "electron": "^1.7.9",
     "electron-packager": "^10.1.0",
+    "electron-rebuild": "^1.6.0",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
@@ -49,6 +51,7 @@
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.1.2",
+    "three": "^0.88.0",
     "ts-node": "~3.2.0",
     "tslint": "~5.7.0",
     "typescript": "~2.4.2"
