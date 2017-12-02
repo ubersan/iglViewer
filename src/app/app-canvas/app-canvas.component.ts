@@ -14,7 +14,8 @@ export class AppCanvasComponent implements OnInit{
     private scene: THREE.Scene;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
-  
+  private group: THREE.Group;
+
     private cube : THREE.Mesh;
   
     constructor(){
@@ -31,40 +32,79 @@ export class AppCanvasComponent implements OnInit{
     }
   
     init(){
-      let screen = {
-        width  : 400,
-        height : 300
-      },
-      view = {
-        angle  : 45,
-        aspect : screen.width / screen.height,
-        near   : 0.1,
-        far    : 1000
-      };
-  
       this.scene = new THREE.Scene();
-      this.camera = new THREE.PerspectiveCamera(view.angle, view.aspect, view. near, view.far);
-      this.renderer = new THREE.WebGLRenderer();
-  
-      this.scene.add(this.camera);
-      this.scene.add(new THREE.AxisHelper(20));
       
-      this.camera.position.set(10,10,10);
-      this.camera.lookAt(new THREE.Vector3(0,0,0));
-  
-      this.renderer.setSize(screen.width, screen.height);
-      this.container.appendChild(this.renderer.domElement);
-  
-  
-      let geometry = new THREE.BoxGeometry(5, 5, 5),
-          material = new THREE.MeshBasicMaterial({ color : 0xFFFFFF, wireframe: true });
-          
-      this.cube = new THREE.Mesh( geometry, material );
-      this.cube.position.set(-50,-50,-50);
+      this.renderer = new THREE.WebGLRenderer({antialias: true});
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(this.renderer.domElement);
       
-      this.scene.add(this.cube);
+                      // camera
+                      this.camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 1, 1000);
+                      this.camera.position.set(30, 40, 60);
+                      this.scene.add(this.camera);
       
-      this.render();
+                      // controls
+                      var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+      
+                      // lights
+                      this.scene.add(new THREE.AmbientLight(0x222222));
+                      this.scene.add(new THREE.PointLight(0xffffff, 1));
+      
+                      this.scene.add(new THREE.AxesHelper(20));
+      
+                      this.group = new THREE.Group();
+                      this.scene.add(this.group);
+      
+                      var meshMaterial = new THREE.MeshLambertMaterial({
+                          color: 0xff00dd,
+                          opacity: 1.0,
+                          transparent: false,
+                          polygonOffset: true,
+                          polygonOffsetFactor: 1, // positive value pushes polygon further away
+                          polygonOffsetUnits: 1
+                      });
+      
+                      var geometry = new THREE.Geometry();
+      
+                      // var Vrows = vResult[0][0];
+                      // var Frows = vResult[0][1];
+      
+                      // for (var i = 1; i < Vrows + 1; ++i) {
+                      //     var x = vResult[i][0] * 100;
+                      //     var y = vResult[i][1] * 100;
+                      //     var z = vResult[i][2] * 100;
+      
+                      //     geometry.vertices.push(new THREE.Vector3(x, y, z));
+                      // }
+      
+                      // for (var i = Vrows + 1; i < Frows + Vrows + 1; ++i) {
+                      //     var x = vResult[i][0];
+                      //     var y = vResult[i][1];
+                      //     var z = vResult[i][2];
+      
+                      //     geometry.faces.push(new THREE.Face3(x, y, z));
+                      // }
+      
+                      // geometry.computeFaceNormals();
+                      // geometry.computeVertexNormals();
+      
+                      // //var meshGeometry = new THREE.ConvexBufferGeometry(geometry.vertices);
+      
+                      // var mesh = new THREE.Mesh(geometry, meshMaterial);
+                      // mesh.material.side = THREE.FrontSide;
+                      // mesh.renderOrder = 0;
+                      // this.group.add(mesh);
+      
+                      // // wireframe
+                      // var geo = new THREE.EdgesGeometry( mesh.geometry ); // or WireframeGeometry
+                      // var mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1 } );
+                      // var wireframe = new THREE.LineSegments( geo, mat );
+                      // mesh.add(wireframe);
+      
+                      // window.addEventListener('resize', onWindowResize, false);
+      
+     // this.render();
     }
   
     render(){
