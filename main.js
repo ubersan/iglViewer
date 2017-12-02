@@ -10,10 +10,14 @@ const url = require('url');
 let mainWindow;
 
 function createWindow() {
-    mainWindow = new BrowserWindow({width: 1600, height: 800});
+    mainWindow = new BrowserWindow({
+        width: 1600,
+        height: 800,
+        backgroundColor: '#ffffff'
+    });
 
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'src/index.html'),
+        pathname: path.join(__dirname, 'dist/index.html'),
         protocol: 'file',
         slashes: true
     }));
