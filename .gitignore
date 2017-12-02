@@ -42,3 +42,7 @@ testem.log
 Thumbs.db
 
 igl-viewer-win32-x64/
+
+bin/
+
+build/
