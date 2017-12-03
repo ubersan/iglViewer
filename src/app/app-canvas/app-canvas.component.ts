@@ -1,15 +1,17 @@
 import { Component, OnInit, ElementRef, ViewChild} from '@angular/core';
 import * as THREE from 'three';
+//import {PerspectiveCamera, OrbitControls, ConvexGeometry, Detector} from 'three/build/three.module';
 
-declare function require<T>(module: string): T;
+//declare function require<T>(module: string): T;
+declare const require: (moduleId: string) => any;
 
 (window as any).THREE = THREE;
 
-require("../../../../../three.js-master/examples/js/controls/OrbitControls");
-require("../../../../../three.js-master/examples/js/QuickHull");
-require("../../../../../three.js-master/examples/js/geometries/ConvexGeometry");
-require("../../../../../three.js-master/examples/js/Detector");
-require("../../../../../three.js-master/examples/js/libs/stats.min");
+// require("../../../../../three.js-master/examples/js/controls/OrbitControls");
+// require("../../../../../three.js-master/examples/js/QuickHull");
+// require("../../../../../three.js-master/examples/js/geometries/ConvexGeometry");
+// require("../../../../../three.js-master/examples/js/Detector");
+// require("../../../../../three.js-master/examples/js/libs/stats.min");
 
 @Component({
   selector: 'app-canvas',
@@ -42,6 +44,7 @@ export class AppCanvasComponent implements OnInit{
     }
   
     init(){
+      var OrbitControls = require('three-orbit-controls')(THREE)
       this.scene = new THREE.Scene();
       
       this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -57,7 +60,7 @@ export class AppCanvasComponent implements OnInit{
       
               // controls
       
-              var controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+              var controls = new OrbitControls( this.camera, this.renderer.domElement );
               controls.minDistance = 20;
               controls.maxDistance = 50;
               controls.maxPolarAngle = Math.PI / 2;
@@ -75,53 +78,53 @@ export class AppCanvasComponent implements OnInit{
       
               // textures
       
-              var loader = new THREE.TextureLoader();
-              var texture = loader.load('../../../../../three.js-master/examples/textures/sprites/disc.png');
+              // var loader = new THREE.TextureLoader();
+              // var texture = loader.load('../../../../../three.js-master/examples/textures/sprites/disc.png');
       
-              this.group = new THREE.Group();
-              this.scene.add( this.group );
+              // this.group = new THREE.Group();
+              // this.scene.add( this.group );
       
-              // points
+              // // points
       
-              var pointsGeometry = new THREE.DodecahedronGeometry( 10 );
+              // var pointsGeometry = new THREE.DodecahedronGeometry( 10 );
       
-              for ( var i = 0; i < pointsGeometry.vertices.length; i ++ ) {
+              // for ( var i = 0; i < pointsGeometry.vertices.length; i ++ ) {
       
-                //pointsGeometry.vertices[ i ].add( randomPoint().multiplyScalar( 2 ) ); // wiggle the points
+              //   //pointsGeometry.vertices[ i ].add( randomPoint().multiplyScalar( 2 ) ); // wiggle the points
       
-              }
+              // }
       
-              var pointsMaterial = new THREE.PointsMaterial( {
+              // var pointsMaterial = new THREE.PointsMaterial( {
       
-                color: 0x0080ff,
-                map: texture,
-                size: 1,
-                alphaTest: 0.5
+              //   color: 0x0080ff,
+              //   map: texture,
+              //   size: 1,
+              //   alphaTest: 0.5
       
-              } );
+              // } );
       
-              var points = new THREE.Points( pointsGeometry, pointsMaterial );
-              this.group.add( points );
+              // var points = new THREE.Points( pointsGeometry, pointsMaterial );
+              // this.group.add( points );
       
-              // convex hull
+              // // convex hull
       
-              var meshMaterial = new THREE.MeshLambertMaterial( {
-                color: 0xffffff,
-                opacity: 0.5,
-                transparent: true
-              } );
+              // var meshMaterial = new THREE.MeshLambertMaterial( {
+              //   color: 0xffffff,
+              //   opacity: 0.5,
+              //   transparent: true
+              // } );
       
-              var meshGeometry = new THREE.ConvexBufferGeometry( pointsGeometry.vertices );
+              // var meshGeometry = new THREE.ConvexBufferGeometry( pointsGeometry.vertices );
       
-              var mesh = new THREE.Mesh( meshGeometry, meshMaterial );
-              mesh.material.side = THREE.BackSide; // back faces
-              mesh.renderOrder = 0;
-              this.group.add( mesh );
+              // var mesh = new THREE.Mesh( meshGeometry, meshMaterial );
+              // mesh.material.side = THREE.BackSide; // back faces
+              // mesh.renderOrder = 0;
+              // this.group.add( mesh );
       
-              var mesh = new THREE.Mesh( meshGeometry, meshMaterial.clone() );
-              mesh.material.side = THREE.FrontSide; // front faces
-              mesh.renderOrder = 1;
-              this.group.add( mesh );
+              // var mesh = new THREE.Mesh( meshGeometry, meshMaterial.clone() );
+              // mesh.material.side = THREE.FrontSide; // front faces
+              // mesh.renderOrder = 1;
+              // this.group.add( mesh );
 
               this.render();
     }
@@ -155,7 +158,7 @@ export class AppCanvasComponent implements OnInit{
     }
 
     animate(){
-      this.group.rotateX(0.01);
+      //this.group.rotateX(0.01);
     }
 
   }
