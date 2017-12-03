@@ -1,6 +1,16 @@
 import { Component, OnInit, ElementRef, ViewChild} from '@angular/core';
 import * as THREE from 'three';
 
+declare function require<T>(module: string): T;
+
+(window as any).THREE = THREE;
+
+require("../../../../../three.js-master/examples/js/controls/OrbitControls");
+require("../../../../../three.js-master/examples/js/QuickHull");
+require("../../../../../three.js-master/examples/js/geometries/ConvexGeometry");
+require("../../../../../three.js-master/examples/js/Detector");
+require("../../../../../three.js-master/examples/js/libs/stats.min");
+
 @Component({
   selector: 'app-canvas',
   templateUrl: './app-canvas.component.html',
@@ -19,7 +29,7 @@ export class AppCanvasComponent implements OnInit{
     private cube : THREE.Mesh;
   
     constructor(){
-      console.log(THREE);
+      console.log("THREE: ", THREE);
   
     }
     
@@ -34,95 +44,118 @@ export class AppCanvasComponent implements OnInit{
     init(){
       this.scene = new THREE.Scene();
       
-      this.renderer = new THREE.WebGLRenderer({antialias: true});
-      this.renderer.setPixelRatio(window.devicePixelRatio);
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(this.renderer.domElement);
+      this.renderer = new THREE.WebGLRenderer( { antialias: true } );
+      this.renderer.setPixelRatio( window.devicePixelRatio );
+      this.renderer.setSize( window.innerWidth, window.innerHeight );
+              document.body.appendChild( this.renderer.domElement );
       
-                      // camera
-                      this.camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 1, 1000);
-                      this.camera.position.set(30, 40, 60);
-                      this.scene.add(this.camera);
+              // camera
       
-                      // controls
-                      var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+              this.camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 1000 );
+              this.camera.position.set( 15, 20, 30 );
+              this.scene.add( this.camera );
       
-                      // lights
-                      this.scene.add(new THREE.AmbientLight(0x222222));
-                      this.scene.add(new THREE.PointLight(0xffffff, 1));
+              // controls
       
-                      this.scene.add(new THREE.AxesHelper(20));
+              var controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+              controls.minDistance = 20;
+              controls.maxDistance = 50;
+              controls.maxPolarAngle = Math.PI / 2;
       
-                      this.group = new THREE.Group();
-                      this.scene.add(this.group);
+              this.scene.add( new THREE.AmbientLight( 0x222222 ) );
       
-                      var meshMaterial = new THREE.MeshLambertMaterial({
-                          color: 0xff00dd,
-                          opacity: 1.0,
-                          transparent: false,
-                          polygonOffset: true,
-                          polygonOffsetFactor: 1, // positive value pushes polygon further away
-                          polygonOffsetUnits: 1
-                      });
+              // light
       
-                      var geometry = new THREE.Geometry();
+              var light = new THREE.PointLight( 0xffffff, 1 );
+              this.camera.add( light );
       
-                      // var Vrows = vResult[0][0];
-                      // var Frows = vResult[0][1];
+              // helper
       
-                      // for (var i = 1; i < Vrows + 1; ++i) {
-                      //     var x = vResult[i][0] * 100;
-                      //     var y = vResult[i][1] * 100;
-                      //     var z = vResult[i][2] * 100;
+              this.scene.add( new THREE.AxesHelper( 20 ) );
       
-                      //     geometry.vertices.push(new THREE.Vector3(x, y, z));
-                      // }
+              // textures
       
-                      // for (var i = Vrows + 1; i < Frows + Vrows + 1; ++i) {
-                      //     var x = vResult[i][0];
-                      //     var y = vResult[i][1];
-                      //     var z = vResult[i][2];
+              var loader = new THREE.TextureLoader();
+              var texture = loader.load('../../../../../three.js-master/examples/textures/sprites/disc.png');
       
-                      //     geometry.faces.push(new THREE.Face3(x, y, z));
-                      // }
+              this.group = new THREE.Group();
+              this.scene.add( this.group );
       
-                      // geometry.computeFaceNormals();
-                      // geometry.computeVertexNormals();
+              // points
       
-                      // //var meshGeometry = new THREE.ConvexBufferGeometry(geometry.vertices);
+              var pointsGeometry = new THREE.DodecahedronGeometry( 10 );
       
-                      // var mesh = new THREE.Mesh(geometry, meshMaterial);
-                      // mesh.material.side = THREE.FrontSide;
-                      // mesh.renderOrder = 0;
-                      // this.group.add(mesh);
+              for ( var i = 0; i < pointsGeometry.vertices.length; i ++ ) {
       
-                      // // wireframe
-                      // var geo = new THREE.EdgesGeometry( mesh.geometry ); // or WireframeGeometry
-                      // var mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1 } );
-                      // var wireframe = new THREE.LineSegments( geo, mat );
-                      // mesh.add(wireframe);
+                //pointsGeometry.vertices[ i ].add( randomPoint().multiplyScalar( 2 ) ); // wiggle the points
       
-                      // window.addEventListener('resize', onWindowResize, false);
+              }
       
-     // this.render();
+              var pointsMaterial = new THREE.PointsMaterial( {
+      
+                color: 0x0080ff,
+                map: texture,
+                size: 1,
+                alphaTest: 0.5
+      
+              } );
+      
+              var points = new THREE.Points( pointsGeometry, pointsMaterial );
+              this.group.add( points );
+      
+              // convex hull
+      
+              var meshMaterial = new THREE.MeshLambertMaterial( {
+                color: 0xffffff,
+                opacity: 0.5,
+                transparent: true
+              } );
+      
+              var meshGeometry = new THREE.ConvexBufferGeometry( pointsGeometry.vertices );
+      
+              var mesh = new THREE.Mesh( meshGeometry, meshMaterial );
+              mesh.material.side = THREE.BackSide; // back faces
+              mesh.renderOrder = 0;
+              this.group.add( mesh );
+      
+              var mesh = new THREE.Mesh( meshGeometry, meshMaterial.clone() );
+              mesh.material.side = THREE.FrontSide; // front faces
+              mesh.renderOrder = 1;
+              this.group.add( mesh );
+
+              this.render();
     }
   
+    randomPoint() {
+      
+      return new THREE.Vector3( THREE.Math.randFloat( - 1, 1 ), THREE.Math.randFloat( - 1, 1 ), THREE.Math.randFloat( - 1, 1 ) );
+
+    }
+
+    onWindowResize() {
+
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+
+      this.renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
     render(){
-  
+        
       let self: AppCanvasComponent = this;
       
       (function render(){
         requestAnimationFrame(render);
         self.renderer.render(self.scene, self.camera);
-  
+
         self.animate();
       }());
       
     }
-  
+
     animate(){
-      this.cube.rotateX(0.01);
-      this.cube.rotateY(0.01);
+      this.group.rotateX(0.01);
     }
-  
+
   }
